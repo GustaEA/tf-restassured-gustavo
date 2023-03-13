@@ -13,13 +13,17 @@ public class AtualizarPessoaTest extends BaseTest {
     private static PessoaService pessoaService = new PessoaService();
     @Test
     public void testAtualizarPessoa(){
-        Integer idPessoa = PessoaDataFactory.idPessoaValidoFromAPI();
+        PessoaModel pessoaTemporaria = PessoaDataFactory.pessoaValida();
+        PessoaModel pessoaCadastrada = pessoaService.cadastrarPessoa(pessoaTemporaria)
+        .then()
+                .extract()
+                            .as(PessoaModel.class);
         PessoaModel pessoaNova = PessoaDataFactory.pessoaValida();
-        PessoaModel pessoaEncontrada = pessoaService.atualizarPessoa(idPessoa, pessoaNova)
-                .then()
+        PessoaModel pessoaEncontrada = pessoaService.atualizarPessoa(pessoaCadastrada.getIdPessoa(), pessoaNova)
+        .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
-                .as(PessoaModel.class);
+                            .as(PessoaModel.class);
         Assertions.assertEquals(pessoaNova.getNome(), pessoaEncontrada.getNome());
     }
 
